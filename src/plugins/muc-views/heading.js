@@ -163,6 +163,7 @@ export default class MUCHeading extends ElementView {
                 'i18n_title': __('Leave and close this groupchat'),
                 'handler': async ev => {
                     ev.stopPropagation();
+                    ev.preventDefault();
                     const messages = [__('Are you sure you want to leave this groupchat?')];
                     const result = await api.confirm(__('Confirm'), messages);
                     result && this.close(ev);
