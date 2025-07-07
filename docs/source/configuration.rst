@@ -2252,8 +2252,8 @@ If set to ``a resource name``, Converse will synchronize only with a client that
 theme
 -----
 
-* Default: ``default``
-* Valid options: ``default``, ``cyberpunk``, ``dracula``, ``nord``
+* Default: ``classic``
+* Valid options: ``classic``, ``cyberpunk``, ``dracula``, ``nordic``
 
 Lets you set a color theme for Converse.
 
