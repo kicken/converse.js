@@ -8,12 +8,12 @@
 import { html } from 'lit';
 import { __ } from 'i18n';
 import { until } from 'lit/directives/until.js';
-import { _converse, converse, api, log, u, constants, MUC } from '@converse/headless';
+import { _converse, api, constants, converse, log, MUC, u } from '@converse/headless';
 import tplAudio from 'shared/texture/templates/audio.js';
 import tplFile from 'templates/file.js';
 import tplImage from 'shared/texture/templates/image.js';
 import tplVideo from 'shared/texture/templates/video.js';
-import { KEY_ALGO, UNTRUSTED, TAG_LENGTH } from './consts.js';
+import { KEY_ALGO, TAG_LENGTH, UNTRUSTED } from './consts.js';
 import { MIMETYPES_MAP } from 'utils/file.js';
 import { IQError, UserFacingError } from 'shared/errors.js';
 import DeviceLists from './devicelists.js';
@@ -72,15 +72,15 @@ export function handleMessageSendError(e, chat) {
                 __(
                     "Sorry, we're unable to send an encrypted message because %1$s " +
                         'requires you to be subscribed to their presence in order to see their OMEMO information',
-                    e.iq.getAttribute('from')
-                )
+                    e.iq.getAttribute('from'),
+                ),
             );
         } else if (sizzle(`remote-server-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]`, e.iq).length) {
             err_msgs.push(
                 __(
                     "Sorry, we're unable to send an encrypted message because the remote server for %1$s could not be found",
-                    e.iq.getAttribute('from')
-                )
+                    e.iq.getAttribute('from'),
+                ),
             );
         } else {
             err_msgs.push(__('Unable to send an encrypted message due to an unexpected error.'));
@@ -115,7 +115,7 @@ export function getOutgoingMessageAttributes(chat, attrs) {
             plaintext: attrs.body,
             body: __(
                 'This is an OMEMO encrypted message which your client doesn’t seem to support. ' +
-                    'Find more information on https://conversations.im/omemo'
+                    'Find more information on https://conversations.im/omemo',
             ),
         };
     }
@@ -275,7 +275,7 @@ async function getAndDecryptFile(url_text) {
  * @param {string} file_url
  * @param {string|Error} obj_url
  * @param {import('shared/texture/texture.js').Texture} richtext
- * @returns {import("lit").TemplateResult}
+ * @returns {import('lit').TemplateResult}
  */
 function getTemplateForObjectURL(file_url, obj_url, richtext) {
     if (isError(obj_url)) {
@@ -317,7 +317,7 @@ function addEncryptedFiles(text, offset, richtext) {
                 objs.push({ url, start, end });
                 return url;
             },
-            parse_options
+            parse_options,
         );
     } catch (error) {
         log.debug(error);
@@ -343,7 +343,7 @@ export function handleEncryptedFiles(richtext) {
          * @param {string} text
          * @param {number} offset
          */
-        (text, offset) => addEncryptedFiles(text, offset, richtext)
+        (text, offset) => addEncryptedFiles(text, offset, richtext),
     );
 }
 
@@ -354,7 +354,7 @@ export function handleEncryptedFiles(richtext) {
  * @param {Element} stanza - The message stanza
  * @param {MUCMessageAttributes|MessageAttributes} attrs
  * @returns {Promise<MUCMessageAttributes| MessageAttributes|
-        import('./types').MUCMessageAttrsWithEncryption|import('./types').MessageAttrsWithEncryption>}
+ import('./types').MUCMessageAttrsWithEncryption|import('./types').MessageAttrsWithEncryption>}
  */
 export async function parseEncryptedMessage(stanza, attrs) {
     if (
@@ -452,7 +452,7 @@ function getJIDForDecryption(attrs) {
         Object.assign(attrs, {
             error_text: __(
                 'Sorry, could not decrypt a received OMEMO ' +
-                    "message because we don't have the XMPP address for that user."
+                    "message because we don't have the XMPP address for that user.",
             ),
             error_type: 'Decryption',
             is_ephemeral: true,
@@ -576,7 +576,7 @@ export function parseBundle(bundle_el) {
         /** @param {Element} el */ (el) => ({
             id: parseInt(el.getAttribute('preKeyId'), 10),
             key: el.textContent,
-        })
+        }),
     );
     return {
         identity_key: bundle_el.querySelector('identityKey').textContent.trim(),
@@ -739,7 +739,7 @@ async function updateDevicesFromStanza(stanza) {
                 return; // We don't set the current device as inactive
             }
             devices.get(id).save('active', false);
-        }
+        },
     );
     device_ids.forEach(
         /** @param {string} device_id */ (device_id) => {
@@ -749,7 +749,7 @@ async function updateDevicesFromStanza(stanza) {
             } else {
                 devices.create({ id: device_id, jid });
             }
-        }
+        },
     );
     if (u.isSameBareJID(bare_jid, jid)) {
         // Make sure our own device is on the list
@@ -785,7 +785,7 @@ export function registerPEPPushHandler() {
         },
         null,
         'message',
-        'headline'
+        'headline',
     );
 }
 
@@ -855,7 +855,7 @@ async function onOccupantAdded(chatroom, occupant) {
                 'message': __(
                     "%1$s doesn't appear to have a client that supports OMEMO. " +
                         'Encrypted chat will no longer be possible in this grouchat.',
-                    occupant.get('nick')
+                    occupant.get('nick'),
                 ),
                 'type': 'error',
             });
@@ -891,14 +891,14 @@ function toggleOMEMO(ev) {
             messages = [
                 __(
                     'Cannot use end-to-end encryption in this groupchat, ' +
-                        'either the groupchat has some anonymity or not all participants support OMEMO.'
+                        'either the groupchat has some anonymity or not all participants support OMEMO.',
                 ),
             ];
         } else {
             messages = [
                 __(
                     "Cannot use end-to-end encryption because %1$s uses a client that doesn't support OMEMO.",
-                    toolbar_el.model.contact.getDisplayName()
+                    toolbar_el.model.contact.getDisplayName(),
                 ),
             ];
         }
@@ -922,7 +922,7 @@ export function getOMEMOToolbarButton(toolbar_el, buttons) {
     } else if (is_muc) {
         title = __(
             'This groupchat needs to be members-only and non-anonymous in ' +
-                'order to support OMEMO encrypted messages'
+                'order to support OMEMO encrypted messages',
         );
     } else {
         title = __('OMEMO encryption is not supported');
@@ -968,8 +968,8 @@ async function getBundlesAndBuildSessions(chatbox) {
         const collections = await Promise.all(
             chatbox.occupants.map(
                 /** @param {import('@converse/headless/types/plugins/muc/occupant').default} o */
-                (o) => getDevicesForContact(o.get('jid'))
-            )
+                (o) => getDevicesForContact(o.get('jid')),
+            ),
         );
         devices = collections.reduce((a, b) => a.concat(b.models), []);
     } else if (chatbox.get('type') === PRIVATE_CHAT_TYPE) {
@@ -989,8 +989,7 @@ async function getBundlesAndBuildSessions(chatbox) {
     // Fetch bundles if necessary
     await Promise.all(devices.map((d) => d.getBundle()));
 
-    const sessions = devices.filter((d) => d).map((d) => getSession(d));
-    await Promise.all(sessions);
+    const sessions = await Promise.all(devices.filter((d) => d).map((d) => getSession(d)));
     if (sessions.includes(null)) {
         // We couldn't build a session for certain devices.
         devices = devices.filter((d) => sessions[devices.indexOf(d)]);
@@ -998,6 +997,7 @@ async function getBundlesAndBuildSessions(chatbox) {
             throw new UserFacingError(no_devices_err);
         }
     }
+
     return devices;
 }
 
@@ -1037,7 +1037,7 @@ export async function createOMEMOMessageStanza(chat, data) {
     const dicts = await Promise.all(
         devices
             .filter((device) => device.get('trusted') != UNTRUSTED && device.get('active'))
-            .map((device) => encryptKey(key_and_tag, device))
+            .map((device) => encryptKey(key_and_tag, device)),
     );
 
     // An encrypted header is added to the message for
@@ -1061,7 +1061,7 @@ export async function createOMEMOMessageStanza(chat, data) {
                     <iv>${iv}</iv>
                 </header>
                 <payload>${payload}</payload>
-            </encrypted>`
+            </encrypted>`,
         )
         .root();
 
