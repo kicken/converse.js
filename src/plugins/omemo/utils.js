@@ -989,8 +989,7 @@ async function getBundlesAndBuildSessions(chatbox) {
     // Fetch bundles if necessary
     await Promise.all(devices.map((d) => d.getBundle()));
 
-    const sessions = devices.filter((d) => d).map((d) => getSession(d));
-    await Promise.all(sessions);
+    const sessions = await Promise.all(devices.filter((d) => d).map((d) => getSession(d)));
     if (sessions.includes(null)) {
         // We couldn't build a session for certain devices.
         devices = devices.filter((d) => sessions[devices.indexOf(d)]);
