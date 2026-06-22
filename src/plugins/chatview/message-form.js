@@ -13,7 +13,7 @@ const { ACTIVE, COMPOSING } = constants;
 export default class MessageForm extends CustomElement {
     static get properties() {
         return {
-            model: { type: Object },
+            model: { type: Object }
         };
     }
 
@@ -103,13 +103,17 @@ export default class MessageForm extends CustomElement {
      * @param {ClipboardEvent} ev
      */
     onPaste(ev) {
-        if (this.shiftDown) {
+        const plainText = ev.clipboardData.getData('text/plain');
+        if (plainText.length !== 0) {
             return;
         }
 
         if (ev.clipboardData.files.length !== 0) {
             ev.stopPropagation();
             ev.preventDefault();
+            console.log(Array.from(ev.clipboardData.files));
+            console.log(Array.from(ev.clipboardData.types));
+            console.log(Array.from(ev.clipboardData.items));
             this.model.sendFiles(Array.from(ev.clipboardData.files));
         }
     }
@@ -130,11 +134,6 @@ export default class MessageForm extends CustomElement {
      * @param {KeyboardEvent} ev
      */
     onKeyUp(ev) {
-        const { keycodes } = converse;
-        if (ev.key === keycodes.SHIFT) {
-            this.shiftDown = false;
-        }
-
         // Trigger an event, for `<converse-message-limit-indicator/>`
         this.model.trigger('event:keyup', { ev });
     }
@@ -144,9 +143,6 @@ export default class MessageForm extends CustomElement {
      */
     onKeyDown(ev) {
         const { keycodes } = converse;
-        if (ev.key === keycodes.SHIFT) {
-            this.shiftDown = true;
-        }
 
         if (
             ev.ctrlKey ||
